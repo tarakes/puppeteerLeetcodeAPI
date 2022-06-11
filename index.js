@@ -9,12 +9,12 @@ app.post('/',async (req,res)=>{
     res.sendStatus(404);
 try {
   const browser = await puppeteer.launch({
-  
     'args' : [
       '--no-sandbox',
       '--disable-setuid-sandbox'
     ]
   });
+   try {
     const page = await browser.newPage();
     await page.setDefaultNavigationTimeout(60000);
   await page.goto(`https://leetcode.com`);
@@ -23,29 +23,18 @@ try {
         const contestid=req.body.contest;
         const pageno=req.body.page;
         const myarr= await  page.evaluate((contest,page) => {
-          /*  const myhtml=document.querySelectorAll(".table-striped")[0].rows;
-            const len=myhtml.length;
-            var arr=[];
-            //console.log(myhtml,myhtml.length);
-            for(var i=1;i<len;i++)
-            arr.push({
-                username:myhtml[i].cells[1].innerText,
-                rank:myhtml[i].cells[0].innerText,
-                score:myhtml[i].cells[2].innerText,
-                finishtime:myhtml[i].cells[3].innerText
-             }) 
-             return arr;*/
-            
            const arr=  fetch(`https://leetcode.com/contest/api/ranking/${contest}/?pagination=${page}&region=global`)
              .then(res=> res.json())
              .then(data=>{return data;})
              .catch((err)=>console.log(err))
              return arr;
                     },contestid,pageno); 
-                    res.send({data:myarr});   
+                    res.send({data:myarr});  
+                    await browser.close(); 
     } catch (error) {
         console.log(error);
-       res.sendStatus(404);  
+       res.sendStatus(404); 
+       await browser.close();  
     }
    
         //console.log(myhtml);
@@ -54,6 +43,13 @@ try {
    } catch (error) {
     console.log(error);
     res.sendStatus(404);
+     browser.close();
+   }                         
+   } catch (error) {
+
+    console.log(error);
+    res.sendStatus(404);
+    
    }
 })
 
