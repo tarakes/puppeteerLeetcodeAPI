@@ -9,12 +9,14 @@ app.post('/',async (req,res)=>{
     res.sendStatus(404);
 try {
   const browser = await puppeteer.launch({
+  
     'args' : [
       '--no-sandbox',
       '--disable-setuid-sandbox'
     ]
   });
     const page = await browser.newPage();
+    await page.setDefaultNavigationTimeout(60000);
   await page.goto(`https://leetcode.com`);
    setTimeout(async () => {
     try {
@@ -55,6 +57,6 @@ try {
    }
 })
 
-app.listen(process.env.PORT || 3000 ,()=>{
+app.listen(process.env.PORT || 4000 ,()=>{
     console.log("server is listening....");
 })
